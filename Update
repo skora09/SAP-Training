@@ -1,0 +1,29 @@
+#Write a program segment that uses the UPDATE statement to modify the record previously inserted into the table SCARR (Airline Carrier). The task is specifically to change the value of the carrname field for the unique carrid key that was used in the previous insertion/modification step.
+
+
+
+REPORT Z_UPDATE.
+DATA: lt_scarr TYPE TABLE OF scarr,
+      ls_scarr TYPE scarr.
+
+CLEAR ls_scarr.
+ls_scarr-carrid = 'Z1'.
+ls_scarr-carrname = 'VNACTION atualizado’.
+ls_scarr-currcode = 'EUR'.
+
+UPDATE scarr
+SET carrname = ls_scarr-carrname
+    currcode = ls_scarr-currcode
+    WHERE carrid = ls_scarr-carrid.
+
+SELECT *
+  FROM scarr
+  INTO TABLE lt_scarr
+  WHERE carrid = 'Z2'.
+
+
+*Imprimindo na tela
+LOOP AT lt_scarr INTO ls_scarr.
+  WRITE: 'O nome da companhia ' , ls_scarr-carrid , ' foi alterado para: ' , ls_scarr-carrname.
+  SKIP.
+ENDLOOP.
