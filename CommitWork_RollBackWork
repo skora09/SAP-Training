@@ -1,0 +1,49 @@
+#Analyze the following two database transaction scenarios. Assume the operations involve inserting records into two related tables (Header and Item).
+
+#Scenario 1: Header Insertion [OK], Item Insertion [OK]
+
+#Scenario 2: Header Insertion [OK], Item Insertion [ERROR]
+
+#For both scenarios, describe the final state of the database if neither COMMIT WORK nor ROLLBACK WORK is explicitly coded. Justify your answer by explaining the implicit actions of the system in case of success versus failure in a transaction block.
+
+
+#Scenario 1: 
+
+REPORT Z_OK.
+
+  DATA: lt_scarr TYPE STANDARD TABLE OF scarr.
+  DATA: ls_scarr TYPE scarr.
+
+
+  CLEAR ls_scarr.
+  ls_scarr-carrid = 2.
+  ls_scarr-carrname = 'Gol linhas aéreas'.
+INSERT scarr FROM ls_scarr.
+
+
+#Scenario 2:
+
+REPORT Z_MODULO5_EX6.
+
+DATA: lt_scarr TYPE STANDARD TABLE OF scarr.
+DATA: ls_scarr TYPE scarr.
+
+DATA: lt_spfli TYPE STANDARD TABLE OF spfli.
+DATA: ls_spfli TYPE spfli.
+
+CLEAR ls_scarr.
+ls_scarr-carrid = 2.
+ls_scarr-carrname = 'Gol linhas aéreas'.
+
+CLEAR ls_spfli.
+ls_spfli-carrid = 0.
+ls_spfli-distance = '200'.
+
+INSERT scarr FROM ls_scarr.
+IF sy-subrc = 0.
+  IF ls_spfli-carrid > 0.
+    INSERT spfli FROM ls_spfli.
+  ELSE.
+    WRITE |O item { ls_scarr-carrname } tem quantidade menor ou igual a zero|.
+  ENDIF.
+ENDIF.
