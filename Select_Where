@@ -1,0 +1,20 @@
+#Select only the records where the carrid field equals value writen from the standard table SCARR. Store the result in an internal table. Then, display the carrid and carrname fields from the internal table to the screen.
+
+
+REPORT zselectwhere.
+
+DATA: lt_scarr TYPE TABLE OF scarr,
+      ls_scarr TYPE scarr.
+
+PARAMETERS: lv_cia type string.
+
+SELECT *
+  FROM scarr
+  INTO TABLE lt_scarr
+  WHERE carrid = lv_cia.
+
+
+
+ LOOP AT lt_scarr INTO ls_scarr.
+   WRITE: 'A companhia escolhida é : ', ls_scarr-carrid, ' - ', ls_scarr-carrname.
+ ENDLOOP.
