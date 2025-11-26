@@ -1,0 +1,117 @@
+#Create a report that displays the following flight itinerary information. This task requires joining data from the SPFLI (Flight Connection) table with the SAIRPORT (Airport) table to retrieve the full airport name. The resulting list must include:
+
+#Country of Origin (spfli-countryfr)
+
+#Departure City (spfli-cityfrom)
+
+#Departure Airport ID (spfli-airpfrom)
+
+#Destination Country (spfli-countryto)
+
+#Destination City (spfli-cityto)
+
+#Destination Airport ID (spfli-airpto)
+
+#Destination Airport Name (sairport-name)
+
+
+
+  REPORT zselectjoinforall.
+
+"------------------------------------------------------------
+" Tipo de estrutura que vai conter os dados combinados
+"------------------------------------------------------------
+TYPES: BEGIN OF ly_type1,
+         countryfr TYPE spfli-countryfr,   " País de origem
+         cityfrom  TYPE spfli-cityfrom,    " Cidade de partida
+         airpfrom  TYPE spfli-airpfrom,    " Aeroporto de partida
+         countryto TYPE spfli-countryto,   " País de destino
+         cityto    TYPE spfli-cityto,      " Cidade de destino
+         airpto    TYPE spfli-airpto,      " Aeroporto de destino
+         name      TYPE sairport-name,     " Nome do aeroporto (partida)
+       END OF ly_type1.
+
+"------------------------------------------------------------
+" Declaração de tabelas internas e variáveis de trabalho
+"------------------------------------------------------------
+DATA: lt_spfli     TYPE STANDARD TABLE OF spfli,
+      ls_spfli     TYPE spfli,
+      lt_sairport  TYPE STANDARD TABLE OF sairport,
+      ls_sairport  TYPE sairport,
+      lt_result    TYPE STANDARD TABLE OF ly_type1,
+      ls_result    TYPE ly_type1.
+
+"------------------------------------------------------------
+" Bloco principal
+"------------------------------------------------------------
+START-OF-SELECTION.
+
+  PERFORM z_select_spfli.
+
+  IF lt_spfli IS INITIAL.
+    MESSAGE 'Nenhum voo encontrado.' TYPE 'I'.
+    EXIT.
+  ENDIF.
+
+  PERFORM z_select_sairport.
+  PERFORM z_mostra_dados.
+
+"------------------------------------------------------------
+" Seleciona os voos (SPFLI)
+"------------------------------------------------------------
+FORM z_select_spfli.
+  SELECT countryfr cityfrom airpfrom countryto cityto airpto
+    FROM spfli
+    INTO TABLE lt_spfli.
+
+  IF sy-subrc = 0.
+    MESSAGE 'Voos carregados com sucesso.' TYPE 'S'.
+  ELSE.
+    MESSAGE 'Nenhum voo encontrado na SPFLI.' TYPE 'I'.
+  ENDIF.
+ENDFORM.
+
+"------------------------------------------------------------
+" Seleciona os aeroportos correspondentes (SAIRPORT)
+" usando FOR ALL ENTRIES
+"------------------------------------------------------------
+FORM z_select_sairport.
+  " FOR ALL ENTRIES precisa que lt_spfli tenha dados
+  DELETE ADJACENT DUPLICATES FROM lt_spfli COMPARING airpfrom.
+
+  SELECT id name
+    FROM sairport
+    INTO TABLE lt_sairport
+    FOR ALL ENTRIES IN lt_spfli
+    WHERE id = lt_spfli-airpfrom.
+
+  IF sy-subrc = 0.
+    MESSAGE 'Aeroportos carregados com sucesso.' TYPE 'S'.
+  ELSE.
+    MESSAGE 'Nenhum aeroporto correspondente encontrado.' TYPE 'I'.
+  ENDIF.
+
+  " Montar resultado final combinando SPFLI + SAIRPORT
+  LOOP AT lt_spfli INTO ls_spfli.
+    READ TABLE lt_sairport INTO ls_sairport
+      WITH KEY id = ls_spfli-airpfrom.
+
+    CLEAR ls_result.
+    MOVE-CORRESPONDING ls_spfli TO ls_result.
+    ls_result-name = ls_sairport-name.
+
+    APPEND ls_result TO lt_result.
+  ENDLOOP.
+ENDFORM.
+
+"------------------------------------------------------------
+" Exibe os dados combinados
+"------------------------------------------------------------
+FORM z_mostra_dados.
+  LOOP AT lt_result INTO ls_result.
+    WRITE: / 'Origem:',  ls_result-countryfr, ls_result-cityfrom, ls_result-airpfrom,
+           / 'Destino:', ls_result-countryto, ls_result-cityto,   ls_result-airpto,
+           / 'Aeroporto:', ls_result-name.
+    ULINE.
+  ENDLOOP.
+ENDFORM.
