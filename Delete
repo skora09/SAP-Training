@@ -1,0 +1,7 @@
+#Write a program segment that uses the DELETE statement to remove the record from the table SCARR (Airline Carrier). The program must specifically target and delete the record identified by the unique carrid that was used in the previous insertion and update steps.
+
+REPORT Z_DELETE.
+DATA: lt_scarr TYPE TABLE OF scarr,
+      ls_scarr TYPE scarr.
+
+DELETE FROM scarr WHERE carrid = 'Z1'.
