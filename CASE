@@ -1,0 +1,34 @@
+#use CASE for some driver license code.
+
+REPORT ZCASE.
+
+
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME.
+  PARAMETERS c_cnh TYPE c.
+
+SELECTION-SCREEN END OF BLOCK b1.
+
+
+START-OF-SELECTION.
+
+DATA c_tipo TYPE string.
+
+CASE c_cnh.
+  WHEN 'A'.
+    c_tipo = 'Moto'.
+
+  WHEN 'B'.
+    c_tipo = 'Carro'.
+
+  WHEN 'C'.
+    c_tipo = 'Cargas'.
+
+  WHEN 'D'.
+    c_tipo = 'Passageiros'.
+
+  WHEN 'E'.
+    c_tipo = 'Caminhão'.
+
+ ENDCASE.
+
+ WRITE c_tipo.
