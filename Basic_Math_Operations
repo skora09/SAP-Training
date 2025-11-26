@@ -1,0 +1,44 @@
+#Design an executable program (e.g., ABAP Report ZCALCULOS) that requires two integer parameters from the user at runtime. The program must then calculate and display the results of the following five arithmetic operations between the two input numbers:
+
+Addition
+
+Subtraction
+
+Multiplication
+
+Division
+
+Exponentiation (Power)
+
+
+REPORT ZCALCULOS.
+DATA v_calculo Type i.
+
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME.
+PARAMETERS: p_num_a type i,
+            p_num_b type i DEFAULT 2.
+
+SELECTION-SCREEN END OF BLOCK b1.
+
+
+START-OF-SELECTION.
+
+v_calculo = p_num_a + p_num_b.
+WRITE: 'A adição dos valores é de : ' , v_calculo EXPONENT 0.
+NEW-LINE.
+
+v_calculo = p_num_a - p_num_b.
+WRITE: 'A subtração dos valores é de : ' , v_calculo.
+NEW-LINE.
+
+v_calculo = p_num_a * p_num_b.
+WRITE: 'A Multiplicação dos valores é de : ' , v_calculo EXPONENT 0.
+NEW-LINE.
+
+v_calculo = p_num_a / p_num_b.
+WRITE: 'A Divisão dos valores é de : ' , v_calculo EXPONENT 0.
+NEW-LINE.
+
+v_calculo = p_num_a ** p_num_b.
+WRITE: 'A Potência dos valores é de : ' , v_calculo EXPONENT 0.
+NEW-LINE.
