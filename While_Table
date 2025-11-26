@@ -1,0 +1,21 @@
+#Select all records from the table saplane. Process the results using a WHILE loop and output the values for the columns planetype and seatsmax.
+
+REPORT ZTABELAWHILE.
+
+
+DATA: lt_saplane TYPE STANDARD TABLE OF saplane,
+      ls_saplane TYPE saplane.
+
+
+
+SELECT *
+  INTO TABLE lt_saplane
+  FROM saplane.
+
+
+WHILE sy-index <= lines( lt_saplane ).
+
+  READ TABLE lt_saplane INTO ls_saplane INDEX sy-index.
+  WRITE: ls_saplane-planetype, ls_saplane-seatsmax.
+  NEW-LINE.
+ENDWHILE.
